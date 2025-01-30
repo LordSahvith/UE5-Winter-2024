@@ -1,14 +1,12 @@
 // Coder: Lord Savith
 
-
 #include "MovingPlatform.h"
 
 // Sets default values
 AMovingPlatform::AMovingPlatform()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 // Called when the game starts or when spawned
@@ -22,8 +20,14 @@ void AMovingPlatform::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	MyVector.Z += 1;
-		
-	SetActorLocation(MyVector);
-}
+	FVector CurrentLocation = GetActorLocation();
 
+	// add vector to that location
+	CurrentLocation.X += 2;
+
+	SetActorLocation(CurrentLocation);
+
+	// Send Platform back if gone too far
+	// check how far we've moved
+	// reverse direction of motion if gone too far
+}

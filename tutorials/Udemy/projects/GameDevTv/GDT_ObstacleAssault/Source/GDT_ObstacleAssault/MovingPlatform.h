@@ -10,8 +10,8 @@ UCLASS()
 class GDT_OBSTACLEASSAULT_API AMovingPlatform : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AMovingPlatform();
 
@@ -19,10 +19,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	UPROPERTY(EditAnywhere)
-	FVector MyVector = FVector(500, 0, 50);
 };
