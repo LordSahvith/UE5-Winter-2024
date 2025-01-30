@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Coder: Lord Savith
 
 
 #include "MovingPlatform.h"
@@ -15,7 +15,8 @@ AMovingPlatform::AMovingPlatform()
 void AMovingPlatform::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	MyX = MyVector.X;	
 }
 
 // Called every frame

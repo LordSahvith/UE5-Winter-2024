@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Coder: Lord Savith
 
 #pragma once
 
@@ -22,5 +22,11 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UPROPERTY(EditAnywhere)
+	FVector MyVector = FVector(1, 2, 3);
+
+	UPROPERTY(EditAnywhere)
+	float MyX = 0;
 
 };
