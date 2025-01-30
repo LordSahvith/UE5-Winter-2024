@@ -36,4 +36,10 @@ void AMovingPlatform::Tick(float DeltaTime)
 		SetActorLocation(StartLocation);
 		PlatformVelocity = -PlatformVelocity; // do last
 	}
+
+	// for (int32 x = 0; x < ControlPoints.Num(); x++)
+	// {
+	// 	FVector MoveTo = FVector(ControlPoints[x]);
+	// 	SetActorLocation(MoveTo);
+	// }
 }
