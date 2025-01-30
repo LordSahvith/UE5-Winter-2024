@@ -29,5 +29,5 @@ public:
 	FVector StartLocation;
 
 	UPROPERTY(EditAnywhere)
-	float DistancedMoved;
+	float DistanceToMove = 100;
 };
