@@ -22,4 +22,8 @@ void UMover::BeginPlay()
 void UMover::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	AActor *Owner = GetOwner();
+
+	UE_LOG(LogTemp, Warning, TEXT("Owner 1: %u"), &Owner);
 }
