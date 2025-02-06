@@ -27,6 +27,6 @@ private:
 	UPROPERTY(EditAnywhere)
 	float MaxGrabDistance = 400.0; // 1 unit = 1 cm : 400 cm = 4 m
 
-	void PrintDamage(const float &Damage);
-	bool HasDamage(float &OutDamage);
+	UPROPERTY(EditAnywhere)
+	float GrabRadius = 100.0;
 };
