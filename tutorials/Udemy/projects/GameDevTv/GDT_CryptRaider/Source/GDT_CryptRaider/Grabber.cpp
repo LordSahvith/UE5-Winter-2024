@@ -2,6 +2,7 @@
 
 #include "Grabber.h"
 #include "Engine/World.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 
 #include "DrawDebugHelpers.h"
 
@@ -20,14 +21,27 @@ void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	// UPhysicsHandleComponent MUST be set on the Actor as a Component or it will be a nullptr, causing system crash
+	UPhysicsHandleComponent *PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+
+	if (PhysicsHandle != nullptr)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Physics Handle Present: %s"), *PhysicsHandle->GetName());
+	}
+	else 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No Physics Handle on the actor (via bp?)."));
+	}
 }
 
 // Called every frame
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+}
 
+void UGrabber::Grab()
+{
 	FVector LineStart = GetComponentLocation();
 	FVector LineEnd = LineStart + GetForwardVector() * MaxGrabDistance;
 
@@ -41,16 +55,16 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		LineEnd,
 		FQuat::Identity,
 		ECC_GameTraceChannel2,
-		Sphere
-	);
+		Sphere);
 
 	if (bHasHit)
 	{
 		AActor *HitActor = HitResult.GetActor();
 		UE_LOG(LogTemp, Warning, TEXT("Actor Hit: %s"), *HitActor->GetActorNameOrLabel());
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No Actor Hit"));
-	}
+}
+
+void UGrabber::Release()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Release()"));
 }
