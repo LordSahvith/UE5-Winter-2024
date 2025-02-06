@@ -33,4 +33,3 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 
 	UE_LOG(LogTemp, Warning, TEXT("Camera Rotation: %s"), *CurrentRotation.ToCompactString());
 }
-
