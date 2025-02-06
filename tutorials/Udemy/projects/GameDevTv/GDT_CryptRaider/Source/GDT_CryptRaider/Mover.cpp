@@ -23,7 +23,11 @@ void UMover::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponent
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	AActor *Owner = GetOwner();
+	AActor *Owner = GetOwner(); // * = pointer
+	// FString Name = (*Owner).GetActorNameOrLabel(); // * = dereference
+	FString Name = Owner->GetActorNameOrLabel(); // -> = dereference
+	FVector Location = Owner->GetActorLocation();
 
-	UE_LOG(LogTemp, Warning, TEXT("Owner 1: %u"), &Owner);
+
+	UE_LOG(LogTemp, Warning, TEXT("Mover Owner: %s Location: %s"), *Name, *Location.ToCompactString());
 }
