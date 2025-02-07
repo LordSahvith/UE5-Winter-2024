@@ -2,7 +2,6 @@
 
 #include "Grabber.h"
 #include "Engine/World.h"
-#include "PhysicsEngine/PhysicsHandleComponent.h"
 
 #include "DrawDebugHelpers.h"
 
@@ -28,7 +27,7 @@ void UGrabber::BeginPlay()
 	{
 		UE_LOG(LogTemp, Display, TEXT("Physics Handle Present: %s"), *PhysicsHandle->GetName());
 	}
-	else 
+	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("No Physics Handle on the actor (via bp?)."));
 	}
@@ -38,14 +37,24 @@ void UGrabber::BeginPlay()
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (GetPhysicsHandle() == nullptr)
+		return;
+
+	FVector TargetLocation = GetComponentLocation() + GetForwardVector() * HoldDistance;
+	GetPhysicsHandle()->SetTargetLocationAndRotation(TargetLocation, GetComponentRotation());
 }
 
 void UGrabber::Grab()
 {
+	if (GetPhysicsHandle() == nullptr)
+		return;
+
 	FVector LineStart = GetComponentLocation();
 	FVector LineEnd = LineStart + GetForwardVector() * MaxGrabDistance;
 
 	DrawDebugLine(GetWorld(), LineStart, LineEnd, FColor::Red);
+	DrawDebugSphere(GetWorld(), LineEnd, 10, 10, FColor::Red, false, 5.0);
 
 	FCollisionShape Sphere = FCollisionShape::MakeSphere(GrabRadius);
 	FHitResult HitResult;
@@ -59,12 +68,27 @@ void UGrabber::Grab()
 
 	if (bHasHit)
 	{
-		AActor *HitActor = HitResult.GetActor();
-		UE_LOG(LogTemp, Warning, TEXT("Actor Hit: %s"), *HitActor->GetActorNameOrLabel());
+		GetPhysicsHandle()->GrabComponentAtLocationWithRotation(
+			HitResult.GetComponent(),
+			NAME_None,
+			HitResult.ImpactPoint,
+			GetComponentRotation());
 	}
 }
 
 void UGrabber::Release()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Release()"));
+}
+
+UPhysicsHandleComponent *UGrabber::GetPhysicsHandle() const
+{
+	UPhysicsHandleComponent *PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	if (PhysicsHandle == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No Physics Handle Found."));
+		return nullptr;
+	}
+
+	return PhysicsHandle;
 }
