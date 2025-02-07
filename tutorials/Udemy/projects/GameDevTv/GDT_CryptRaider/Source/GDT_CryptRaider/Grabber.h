@@ -33,13 +33,16 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere)
-	float MaxGrabDistance = 400.0; // 1 unit = 1 cm : 400 cm = 4 m
+	float MaxGrabDistance = 800.0; // 1 unit = 1 cm : 400 cm = 4 m
 
 	UPROPERTY(EditAnywhere)
 	float HoldDistance = 200.0; // 1 unit = 1 cm : 200 cm = 2 m
 
 	UPROPERTY(EditAnywhere)
 	float GrabRadius = 100.0;
+
+	UPROPERTY(EditAnywhere)
+	float InterpSpeed = 10.0;
 
 	UPhysicsHandleComponent *GetPhysicsHandle() const;
 };
