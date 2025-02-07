@@ -38,26 +38,25 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (GetPhysicsHandle() == nullptr)
+	UPhysicsHandleComponent *PhysicsHandle = GetPhysicsHandle();
+	if (PhysicsHandle == nullptr)
 		return;
 
 	FVector TargetLocation = GetComponentLocation() + GetForwardVector() * HoldDistance;
-	GetPhysicsHandle()->SetTargetLocationAndRotation(TargetLocation, GetComponentRotation());
+	PhysicsHandle->SetTargetLocationAndRotation(TargetLocation, GetComponentRotation());
 }
 
 void UGrabber::Grab()
 {
-	if (GetPhysicsHandle() == nullptr)
+	UPhysicsHandleComponent *PhysicsHandle = GetPhysicsHandle();
+	if (PhysicsHandle == nullptr)
 		return;
 
 	FVector LineStart = GetComponentLocation();
 	FVector LineEnd = LineStart + GetForwardVector() * MaxGrabDistance;
-
-	DrawDebugLine(GetWorld(), LineStart, LineEnd, FColor::Red);
-	DrawDebugSphere(GetWorld(), LineEnd, 10, 10, FColor::Red, false, 5.0);
-
 	FCollisionShape Sphere = FCollisionShape::MakeSphere(GrabRadius);
 	FHitResult HitResult;
+	
 	bool bHasHit = GetWorld()->SweepSingleByChannel(
 		HitResult,
 		LineStart,
@@ -68,7 +67,7 @@ void UGrabber::Grab()
 
 	if (bHasHit)
 	{
-		GetPhysicsHandle()->GrabComponentAtLocationWithRotation(
+		PhysicsHandle->GrabComponentAtLocationWithRotation(
 			HitResult.GetComponent(),
 			NAME_None,
 			HitResult.ImpactPoint,
@@ -86,8 +85,7 @@ UPhysicsHandleComponent *UGrabber::GetPhysicsHandle() const
 	UPhysicsHandleComponent *PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
 	if (PhysicsHandle == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("No Physics Handle Found."));
-		return nullptr;
+		UE_LOG(LogTemp, Error, TEXT("Grabber requires a UPhysicsHandleComponent."));
 	}
 
 	return PhysicsHandle;
