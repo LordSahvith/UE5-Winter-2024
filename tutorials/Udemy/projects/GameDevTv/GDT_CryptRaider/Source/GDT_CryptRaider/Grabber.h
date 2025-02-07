@@ -45,4 +45,6 @@ private:
 	float InterpSpeed = 10.0;
 
 	UPhysicsHandleComponent *GetPhysicsHandle() const;
+
+	bool GetGrabbableInReach(FHitResult &OutHitResult) const;
 };
