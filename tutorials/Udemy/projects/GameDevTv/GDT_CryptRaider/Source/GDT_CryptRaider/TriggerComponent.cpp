@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "TriggerComponent.h"
 
 // Sets default values for this component's properties
@@ -22,11 +21,14 @@ void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	TArray<AActor*> Actors;
+	TArray<AActor *> Actors;
 	GetOverlappingActors(Actors);
 
-	if (Actors.Num() > 0)
+	for (AActor *Actor : Actors)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Overlapping Actor: %s"), *Actors[0]->GetName());
+		if (Actor->ActorHasTag(UnlockTagName))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Unlocking Actor: %s"), *Actor->GetActorNameOrLabel());
+		}
 	}
 }
