@@ -27,41 +27,46 @@ void UTriggerComponent::SetMover(UMover *NewMover)
 	Mover = NewMover;
 }
 
-void UTriggerComponent::Unlock(AActor *OverlappedActor) const
+void UTriggerComponent::Unlock(AActor *OverlappedActor)
 {
 	if (OverlappedActor->ActorHasTag(UnlockTagName))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Unlocking Actor: %s"), *GetAcceptableActor()->GetActorNameOrLabel());
+		UPrimitiveComponent *Component = Cast<UPrimitiveComponent>(OverlappedActor->GetRootComponent());
+		if (Component != nullptr)
+		{
+			Component->SetSimulatePhysics(false);
+		}
+		OverlappedActor->AttachToComponent(this, FAttachmentTransformRules::KeepWorldTransform);
 		Mover->SetShouldMove(true);
 	}
 }
 
 void UTriggerComponent::Lock() const
 {
-	UE_LOG(LogTemp, Warning, TEXT("Locked"));
 	Mover->SetShouldMove(false);
 }
 
 /*
 	FOR REFERENCE: didn't like iterating over list
-	and didn't like Tick() constantly checking either
-	now the BP's Begin/End Overlap Events calls 
-	UnLock() & Lock() appropriately until I learn how 
+	and didn't like Tick() constantly checking either.
+	Now the BP's Begin/End Overlap Events call
+	UnLock() & Lock() respectively...until I learn how 
 	to properly handle events in C++
+
+	AActor *UTriggerComponent::GetAcceptableActor() const
+	{
+		TArray<AActor *> Actors;
+		GetOverlappingActors(Actors);
+
+		for (AActor *Actor : Actors)
+		{
+			if (Actor->ActorHasTag(UnlockTagName))
+			{
+				return Actor;
+			}
+		}
+
+		return nullptr;
+	}
+
 */
-
-// AActor *UTriggerComponent::GetAcceptableActor() const
-// {
-// 	TArray<AActor *> Actors;
-// 	GetOverlappingActors(Actors);
-
-// 	for (AActor *Actor : Actors)
-// 	{
-// 		if (Actor->ActorHasTag(UnlockTagName))
-// 		{
-// 			return Actor;
-// 		}
-// 	}
-
-// 	return nullptr;
-// }
