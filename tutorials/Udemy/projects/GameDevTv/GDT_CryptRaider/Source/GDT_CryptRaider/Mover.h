@@ -23,6 +23,8 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 
+	void SetShouldMove(bool bShouldMove);
+
 private:
 	UPROPERTY(EditAnywhere, meta = (MakeEditWidget = true))
 	FVector MoveOffset;
@@ -30,8 +32,6 @@ private:
 	UPROPERTY(EditAnywhere)
 	float MoveTime = 4.0;
 
-	UPROPERTY(EditAnywhere)
 	bool bShouldMove = false;
-
 	FVector StartLocation;
 };
