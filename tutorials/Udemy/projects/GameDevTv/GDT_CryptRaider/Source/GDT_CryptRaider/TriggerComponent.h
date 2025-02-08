@@ -30,6 +30,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetMover(UMover *Mover);
 
+	UFUNCTION(BlueprintCallable)
+	void Unlock(AActor *OverlappedActor) const;
+
+	UFUNCTION(BlueprintCallable)
+	void Lock() const;
+
 private:
 	UPROPERTY(EditAnywhere)
 	FName UnlockTagName;

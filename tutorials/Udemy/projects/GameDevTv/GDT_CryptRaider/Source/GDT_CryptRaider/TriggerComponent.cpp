@@ -20,19 +20,6 @@ void UTriggerComponent::BeginPlay()
 void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	AActor *UnlockingActor = GetAcceptableActor();
-
-	if (UnlockingActor != nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Unlocking Actor: %s"), *UnlockingActor->GetActorNameOrLabel());
-		Mover->SetShouldMove(true);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Locked"));
-		Mover->SetShouldMove(false);
-	}
 }
 
 void UTriggerComponent::SetMover(UMover *NewMover)
@@ -40,18 +27,41 @@ void UTriggerComponent::SetMover(UMover *NewMover)
 	Mover = NewMover;
 }
 
-AActor *UTriggerComponent::GetAcceptableActor() const
+void UTriggerComponent::Unlock(AActor *OverlappedActor) const
 {
-	TArray<AActor *> Actors;
-	GetOverlappingActors(Actors);
-
-	for (AActor *Actor : Actors)
+	if (OverlappedActor->ActorHasTag(UnlockTagName))
 	{
-		if (Actor->ActorHasTag(UnlockTagName))
-		{
-			return Actor;
-		}
+		UE_LOG(LogTemp, Warning, TEXT("Unlocking Actor: %s"), *GetAcceptableActor()->GetActorNameOrLabel());
+		Mover->SetShouldMove(true);
 	}
-
-	return nullptr;
 }
+
+void UTriggerComponent::Lock() const
+{
+	UE_LOG(LogTemp, Warning, TEXT("Locked"));
+	Mover->SetShouldMove(false);
+}
+
+/*
+	FOR REFERENCE: didn't like iterating over list
+	and didn't like Tick() constantly checking either
+	now the BP's Begin/End Overlap Events calls 
+	UnLock() & Lock() appropriately until I learn how 
+	to properly handle events in C++
+*/
+
+// AActor *UTriggerComponent::GetAcceptableActor() const
+// {
+// 	TArray<AActor *> Actors;
+// 	GetOverlappingActors(Actors);
+
+// 	for (AActor *Actor : Actors)
+// 	{
+// 		if (Actor->ActorHasTag(UnlockTagName))
+// 		{
+// 			return Actor;
+// 		}
+// 	}
+
+// 	return nullptr;
+// }
