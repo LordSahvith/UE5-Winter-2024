@@ -20,17 +20,11 @@ void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// UPhysicsHandleComponent MUST be set on the Actor as a Component or it will be a nullptr, causing system crash
-	UPhysicsHandleComponent *PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-
-	if (PhysicsHandle != nullptr)
-	{
-		UE_LOG(LogTemp, Display, TEXT("Physics Handle Present: %s"), *PhysicsHandle->GetName());
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No Physics Handle on the actor (via bp?)."));
-	}
+	/* UPhysicsHandleComponent MUST be set on the Actor
+		as a Component or it will be a nullptr,
+		causing system crash
+	*/
+	GetPhysicsHandle();
 }
 
 // Called every frame
@@ -38,30 +32,26 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	UPhysicsHandleComponent *PhysicsHandle = GetPhysicsHandle();
-	if (PhysicsHandle == nullptr)
-		return;
-
-	if (PhysicsHandle->GetGrabbedComponent() != nullptr)
+	if (bIsGrabbed)
 	{
-		FVector TargetLocation = GetComponentLocation() + GetForwardVector() * HoldDistance;
-		PhysicsHandle->SetInterpolationSpeed(InterpSpeed);
-		PhysicsHandle->SetTargetLocationAndRotation(TargetLocation, GetComponentRotation());
+		HoldGrabbable();
 	}
 }
 
 void UGrabber::Grab()
 {
+	bIsGrabbed = true;
 	UPhysicsHandleComponent *PhysicsHandle = GetPhysicsHandle();
-	if (PhysicsHandle == nullptr)
-		return;
-
 	FHitResult HitResult;
-	if (GetGrabbableInReach(HitResult))
+
+	if (PhysicsHandle && GetGrabbableInReach(HitResult))
 	{
 		UPrimitiveComponent *HitComponent = HitResult.GetComponent();
+		HitComponent->SetSimulatePhysics(true);
 		HitComponent->WakeAllRigidBodies();
-		HitResult.GetActor()->Tags.Add("Grabbed");
+		AActor *HitActor = HitResult.GetActor();
+		HitActor->Tags.Add("Grabbed");
+		HitActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		PhysicsHandle->GrabComponentAtLocationWithRotation(
 			HitComponent,
 			NAME_None,
@@ -70,13 +60,24 @@ void UGrabber::Grab()
 	}
 }
 
-void UGrabber::Release()
+void UGrabber::HoldGrabbable() const
 {
 	UPhysicsHandleComponent *PhysicsHandle = GetPhysicsHandle();
-	if (PhysicsHandle == nullptr)
-		return;
 
-	if (PhysicsHandle->GetGrabbedComponent() != nullptr)
+	if (PhysicsHandle && PhysicsHandle->GetGrabbedComponent())
+	{
+		FVector TargetLocation = GetComponentLocation() + GetForwardVector() * HoldDistance;
+		PhysicsHandle->SetInterpolationSpeed(InterpSpeed);
+		PhysicsHandle->SetTargetLocationAndRotation(TargetLocation, GetComponentRotation());
+	}
+}
+
+void UGrabber::Release()
+{
+	bIsGrabbed = false;
+	UPhysicsHandleComponent *PhysicsHandle = GetPhysicsHandle();
+
+	if (PhysicsHandle && PhysicsHandle->GetGrabbedComponent())
 	{
 		AActor *GrabbedActor = PhysicsHandle->GetGrabbedComponent()->GetOwner();
 		GrabbedActor->Tags.Remove("Grabbed");
@@ -89,7 +90,7 @@ UPhysicsHandleComponent *UGrabber::GetPhysicsHandle() const
 	UPhysicsHandleComponent *PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
 	if (PhysicsHandle == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Grabber requires a UPhysicsHandleComponent."));
+		UE_LOG(LogTemp, Error, TEXT("%s BP requires a Physics Handle Component."), *GetOwner()->GetActorNameOrLabel());
 	}
 
 	return PhysicsHandle;

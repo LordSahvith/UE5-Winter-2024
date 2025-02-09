@@ -27,16 +27,20 @@ void UTriggerComponent::SetMover(UMover *NewMover)
 	Mover = NewMover;
 }
 
-void UTriggerComponent::Unlock(AActor *OverlappedActor)
+void UTriggerComponent::Unlock(AActor *OverlappedActor, bool bIsAttachment)
 {
 	if (OverlappedActor->ActorHasTag(UnlockTagName))
 	{
-		UPrimitiveComponent *Component = Cast<UPrimitiveComponent>(OverlappedActor->GetRootComponent());
-		if (Component != nullptr)
+		if (bIsAttachment)
 		{
-			Component->SetSimulatePhysics(false);
+			UPrimitiveComponent *Component = Cast<UPrimitiveComponent>(OverlappedActor->GetRootComponent());
+			if (Component)
+			{
+				Component->SetSimulatePhysics(false);
+			}
+			OverlappedActor->AttachToComponent(this, FAttachmentTransformRules::KeepWorldTransform);
 		}
-		OverlappedActor->AttachToComponent(this, FAttachmentTransformRules::KeepWorldTransform);
+
 		Mover->SetShouldMove(true);
 	}
 }
@@ -50,7 +54,7 @@ void UTriggerComponent::Lock() const
 	FOR REFERENCE: didn't like iterating over list
 	and didn't like Tick() constantly checking either.
 	Now the BP's Begin/End Overlap Events call
-	UnLock() & Lock() respectively...until I learn how 
+	UnLock() & Lock() respectively...until I learn how
 	to properly handle events in C++
 
 	AActor *UTriggerComponent::GetAcceptableActor() const

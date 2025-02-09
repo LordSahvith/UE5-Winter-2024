@@ -31,7 +31,7 @@ public:
 	void SetMover(UMover *Mover);
 
 	UFUNCTION(BlueprintCallable)
-	void Unlock(AActor *OverlappedActor);
+	void Unlock(AActor *OverlappedActor, bool bIsAttachment);
 
 	UFUNCTION(BlueprintCallable)
 	void Lock() const;
