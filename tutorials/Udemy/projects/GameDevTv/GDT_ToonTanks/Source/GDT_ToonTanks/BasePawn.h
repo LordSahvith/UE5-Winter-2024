@@ -29,4 +29,13 @@ class GDT_TOONTANKS_API ABasePawn : public APawn
   private:
     UPROPERTY()
     class UCapsuleComponent* CapsuleComponent;
+
+	UPROPERTY()
+	UStaticMeshComponent* BodyMesh;
+
+	UPROPERTY()
+	UStaticMeshComponent* TurretMesh;
+
+	UPROPERTY()
+	USceneComponent* ProjectileSpawnPoint;
 };
